@@ -1,0 +1,8 @@
+.text-field {
+    -fx-border-color: black;
+    -fx-border-style: solid;
+    -fx-font-family: Future;
+    -fx-font-size: 14pt;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+}
