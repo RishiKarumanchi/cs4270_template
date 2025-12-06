@@ -14,10 +14,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.Node;
 
 public class SudokuGame extends Application{
+    private static TextField[][] cells = new TextField[9][9];
     @Override
     public void start(Stage primaryStage) {
-        
-
       GridPane sudokuGrid = new GridPane();
       sudokuGrid.setGridLinesVisible(true);
       sudokuGrid.setAlignment(Pos.CENTER);
@@ -38,12 +37,11 @@ public class SudokuGame extends Application{
       for (int row = 0; row < 9; row++) {
           for (int col = 0; col < 9; col++) {
             TextField cell = new TextField();
+            cells[row][col] = cell;
             // Filters the entered text to 1-9
             UnaryOperator<TextFormatter.Change> filter = change -> {
               String enteredText = change.getControlNewText();
-              if (enteredText.matches("[1-9]") || enteredText.isEmpty()) {
-                return change;
-              }
+              if (enteredText.matches("[1-9]?")) return change;
               return null;
             };
             TextFormatter<String> singleDigit = new TextFormatter<>(filter);
@@ -92,10 +90,12 @@ public class SudokuGame extends Application{
         BackgroundFill backgroundFill = new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY);
         Background background = new Background(backgroundFill);
 
-        BorderPane borderPane = new BorderPane(sudokuGrid, null, vbox, null, null);
+        BorderPane borderPane = new BorderPane();
+        borderPane.setCenter(sudokuGrid);
+        borderPane.setRight(vbox);
         borderPane.setPadding(new Insets(0, 200, 0, 0 ));
         borderPane.setBackground(background);
-        Scene scene = new Scene(borderPane, 300, 200);
+        Scene scene = new Scene(borderPane, 700, 600);
         scene.setFill(c);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         primaryStage.setScene(scene);
@@ -124,7 +124,7 @@ public class SudokuGame extends Application{
           for (int col = 0; col < 9; col++) {
             int index = row*9 + col;
             String clue = cluesString.substring(index, index+1);
-            TextField cell = getCell(sudokuGrid, row, col);
+            TextField cell = cells[row][col];
             cell.setAlignment(Pos.CENTER);
 
             if (clue.equals("0")) {
