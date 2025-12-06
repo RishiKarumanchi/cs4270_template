@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.function.UnaryOperator;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -36,6 +38,16 @@ public class SudokuGame extends Application{
       for (int row = 0; row < 9; row++) {
           for (int col = 0; col < 9; col++) {
             TextField cell = new TextField();
+            // Filters the entered text to 1-9
+            UnaryOperator<TextFormatter.Change> filter = change -> {
+              String enteredText = change.getControlNewText();
+              if (enteredText.matches("[1-9]") || enteredText.isEmpty()) {
+                return change;
+              }
+              return null;
+            };
+            TextFormatter<String> singleDigit = new TextFormatter<>(filter);
+            cell.setTextFormatter(singleDigit);
             cell.setAlignment(Pos.CENTER);
             // Build CSS for the borders
             StringBuilder style = new StringBuilder();
@@ -76,13 +88,12 @@ public class SudokuGame extends Application{
         options.setPrefSize(100, 50);
         help.setPrefSize(100, 50);
         vbox.setAlignment(Pos.CENTER);
-        HBox hbox = new HBox(10.0, sudokuGrid, vbox);
         Color c = Color.rgb(139, 0, 0);
         BackgroundFill backgroundFill = new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY);
         Background background = new Background(backgroundFill);
 
-        BorderPane borderPane = new BorderPane(sudokuGrid, null, hbox, null, null);
-        borderPane.setPadding(new Insets(0, 100, 0, 0 ));
+        BorderPane borderPane = new BorderPane(sudokuGrid, null, vbox, null, null);
+        borderPane.setPadding(new Insets(0, 200, 0, 0 ));
         borderPane.setBackground(background);
         Scene scene = new Scene(borderPane, 300, 200);
         scene.setFill(c);
