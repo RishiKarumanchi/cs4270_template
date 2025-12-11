@@ -28,17 +28,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
-/**
-* SudokuGame
-*
-* - Loads puzzles from boards.txt (each line is an 81-char string, '0' = blank).
-* - New Puzzle loads a random board and computes/keeps its solution.
-* - Solve Board fills the grid with solution values.
-* - Check Answers compares user inputs to the stored solution and shows a popup
-*   if incorrect entries are found (or a success popup if all correct).
-*
-* Keep boards.txt in the project working directory (same place you run the app).
-*/
+
 public class SudokuGame extends Application {
    // Stores current puzzle and its solved solution
    private static int[][] currentSolution = null;
@@ -351,7 +341,7 @@ public class SudokuGame extends Application {
    // File load / puzzle handling
    private void loadRandomPuzzleFromFile() throws IOException {
       // Reads lines from file
-      String[] lines = Files.readString(Paths.get("demo\\boards.txt")).split("\n");
+      String[] lines = Files.readString(Paths.get("SudokuSolver\boards.txt")).split("\n");
       if (lines.length == 0) throw new IOException("boards.txt is empty.");
 
       String chosenPuzzle = null;
@@ -391,7 +381,7 @@ public class SudokuGame extends Application {
        computeDifficulty();
    }
 
-
+   // Puts in clues and blank cells into user interface
    private void populateGridFromPuzzle(int[][] puzzle, GridPane grid) {
        grid.getChildren().clear();
 
@@ -427,7 +417,7 @@ public class SudokuGame extends Application {
        }
    }
 
-
+   // Returns a 2D integer array of the board
    private int[][] getBoardFromGrid(GridPane grid) {
        int[][] board = new int[9][9];
        for (int row = 0; row < 9; row++) {
@@ -449,7 +439,7 @@ public class SudokuGame extends Application {
        return board;
    }
 
-
+   // Returns a TextField from the row and column index in a GridPane
    private TextField getTextFieldByRowColumn(int row, int col, GridPane grid) {
        for (Node node : grid.getChildren()) {
            Integer r = GridPane.getRowIndex(node);
@@ -462,7 +452,7 @@ public class SudokuGame extends Application {
    }
 
 
-   // Solver (backtracking)
+   // Solver (backtracking with recursion limit)
    private final int maxRecursionCount = 100000;
    private int recursionCount = 0;
    private boolean solveSudoku(int[][] board) {
@@ -488,13 +478,13 @@ public class SudokuGame extends Application {
        return false;
    }
 
-
+   
    private int[] findEmpty(int[][] board) {
        for (int r = 0; r < 9; r++) for (int c = 0; c < 9; c++) if (board[r][c] == 0) return new int[]{r,c};
        return null;
    }
 
-   
+   // Checks for clue conflicts
    private boolean isValidPlacement(int[][] board, int row, int col, int num) {
        for (int i = 0; i < 9; i++) {
            if (board[row][i] == num) return false;
@@ -518,13 +508,14 @@ public class SudokuGame extends Application {
        }
    }
 
-
+   // Alert handler
    private void showErrorAlert(String message) {
        Alert alert = new Alert(Alert.AlertType.ERROR, message);
        alert.setHeaderText(null);
        alert.showAndWait();
    }
 
+   // Checks if a board has direct clue conflicts
    private boolean hasConflicts(int[][] board) {
     for (int row = 0; row < 9; row++) {
       for (int col = 0; col < 9; col++) {
@@ -542,6 +533,7 @@ public class SudokuGame extends Application {
     return false;
    }
 
+  
    private void resetTimer() {
     secondsElapsed = 0;
     timerLabel.setText("Time: 0:00");
@@ -549,6 +541,7 @@ public class SudokuGame extends Application {
     timeline.play();
    }
    
+   // Filters a textfield to only numbers 1-9
    private void singleDigit(TextField tf) {
     UnaryOperator<TextFormatter.Change> filter = change -> {
     String enteredText = change.getControlNewText();
@@ -559,6 +552,7 @@ public class SudokuGame extends Application {
     tf.setTextFormatter(singleDigit);
    }
 
+   // Sets clues text
    private void computeDifficulty() {
     if (currentPuzzle == null) {
       clues.setText("Clues: 0 (N/A)");
@@ -573,8 +567,8 @@ public class SudokuGame extends Application {
     }
     String difficulty = "Easy";
     if (count < 36) difficulty = "Medium";
-    else if (count < 27) difficulty = "Hard";
-    else if (count < 19) difficulty = "Very Hard";
+    if (count < 27) difficulty = "Hard";
+    if (count < 19) difficulty = "Very Hard";
 
     clues.setText("Clues: " + count + " (" + difficulty + ")");
    }

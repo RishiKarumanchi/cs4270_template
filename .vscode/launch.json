@@ -9,6 +9,13 @@
             "name": "SudokuGame",
             "request": "launch",
             "mainClass": "SudokuGame",
+            "projectName": ""
+        },
+        {
+            "type": "java",
+            "name": "SudokuGame",
+            "request": "launch",
+            "mainClass": "SudokuGame",
             "projectName": "demo"
         },
         {
